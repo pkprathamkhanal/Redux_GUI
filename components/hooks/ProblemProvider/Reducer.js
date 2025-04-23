@@ -1,6 +1,11 @@
 import { useGenericInfo } from "../ProblemProvider";
-import { requestReductionOptions, requestInfo, requestReductions, requestReducedInstanceFromPath } from "../../redux";
-import React, { useEffect, useState, useRef } from "react";
+import {
+  requestReductionOptions,
+  requestInfo,
+  requestReductions,
+  requestReducedInstanceFromPath,
+} from "../../redux";
+import React, { useEffect, useState } from "react";
 
 // For initial startup defaults
 const DEFAULT_SAT3_CHOSEN_REDUCE_TO = "CLIQUE";
@@ -11,14 +16,27 @@ const DEFAULT_VERTEXCOVER_CHOSEN_REDUCTION_TYPE = "sipserReduceToVC";
 export function useReducer(url, problemName, problemType, problemInstance) {
   const state = {};
   [state.reduceToOptions] = useReduceToOptions(url, problemName, problemType);
-  [state.chosenReduceTo, state.setChosenReduceTo] = useChosenReduceTo(problemName, state.reduceToOptions);
-  [state.reductionNameMap] = useReductionNameMap(url, problemName, state.chosenReduceTo);
-  [state.reductionTypeOptions] = useReductionTypeOptions(url, problemName, problemType, state.chosenReduceTo);
-  [state.chosenReductionType, state.setChosenReductionType] = useChosenReductionType(
+  [state.chosenReduceTo, state.setChosenReduceTo] = useChosenReduceTo(
     problemName,
-    state.chosenReduceTo,
-    state.reductionTypeOptions
+    state.reduceToOptions
   );
+  [state.reductionNameMap] = useReductionNameMap(
+    url,
+    problemName,
+    state.chosenReduceTo
+  );
+  [state.reductionTypeOptions] = useReductionTypeOptions(
+    url,
+    problemName,
+    problemType,
+    state.chosenReduceTo
+  );
+  [state.chosenReductionType, state.setChosenReductionType] =
+    useChosenReductionType(
+      problemName,
+      state.chosenReduceTo,
+      state.reductionTypeOptions
+    );
   [state.reducedInstance, state.setReducedInstance] = useReducedInstance(
     url,
     problemInstance,
@@ -32,7 +50,12 @@ export function useReducerInfo(url, reducer) {
   return useGenericInfo(url, (reducer ?? "").split("-")[0]);
 }
 
-function useReducedInstance(url, problemInstance, chosenReduceTo, chosenReductionType) {
+function useReducedInstance(
+  url,
+  problemInstance,
+  chosenReduceTo,
+  chosenReductionType
+) {
   const [reducedInstance, setReducedInstance] = useState("");
 
   useEffect(() => {
@@ -45,7 +68,11 @@ function useReducedInstance(url, problemInstance, chosenReduceTo, chosenReductio
     (async () => {
       setReducedInstance(
         chosenReductionType && problemInstance
-          ? (await requestReducedInstanceFromPath(url, chosenReductionType, problemInstance)) ?? ""
+          ? (await requestReducedInstanceFromPath(
+              url,
+              chosenReductionType,
+              problemInstance
+            )) ?? ""
           : ""
       );
     })();
@@ -60,7 +87,10 @@ function useReduceToOptions(url, problemName, problemType) {
   useEffect(() => {
     (async () => {
       setReduceToOptions(
-        (problemName && problemType ? (await requestReductionOptions(url, problemName, problemType)) ?? [] : []).sort()
+        (problemName && problemType
+          ? (await requestReductionOptions(url, problemName, problemType)) ?? []
+          : []
+        ).sort()
       );
     })();
   }, [problemName, problemType]);
@@ -68,22 +98,43 @@ function useReduceToOptions(url, problemName, problemType) {
   return [reduceToOptions, setReduceToOptions];
 }
 
-function useReductionTypeOptions(url, problemName, problemType, chosenReduceTo) {
+function useReductionTypeOptions(
+  url,
+  problemName,
+  problemType,
+  chosenReduceTo
+) {
   const [reductionTypeOptions, setReductionTypeOptions] = useState([]);
 
   useEffect(() => {
     (async () => {
       setReductionTypeOptions(
         (problemName && problemType && chosenReduceTo
-          ? (await requestPreparedReductions(url, problemName, chosenReduceTo, problemType)) ?? []
+          ? (await requestPreparedReductions(
+              url,
+              problemName,
+              chosenReduceTo,
+              problemType
+            )) ?? []
           : []
         ).sort()
       );
     })();
   }, [problemType, chosenReduceTo]);
 
-  async function requestPreparedReductions(url, problemName, chosenReduceTo, problemType) {
-    const reductions = (await requestReductions(url, problemName, chosenReduceTo, problemType)) ?? [];
+  async function requestPreparedReductions(
+    url,
+    problemName,
+    chosenReduceTo,
+    problemType
+  ) {
+    const reductions =
+      (await requestReductions(
+        url,
+        problemName,
+        chosenReduceTo,
+        problemType
+      )) ?? [];
     let path = "";
     for (const reduction of reductions) {
       path += reduction[0] + "-";
@@ -94,7 +145,11 @@ function useReductionTypeOptions(url, problemName, problemType, chosenReduceTo) 
   return [reductionTypeOptions, setReductionTypeOptions];
 }
 
-function useChosenReductionType(problemName, chosenReduceTo, reductionTypeOptions) {
+function useChosenReductionType(
+  problemName,
+  chosenReduceTo,
+  reductionTypeOptions
+) {
   const [chosenReductionType, setChosenReductionType] = useState("");
   const isFirstRender = useRef(true);
 
@@ -126,7 +181,9 @@ function useChosenReductionType(problemName, chosenReduceTo, reductionTypeOption
     ) {
       setChosenReductionType(DEFAULT_VERTEXCOVER_CHOSEN_REDUCTION_TYPE);
     } else {
-      setChosenReductionType(!reductionTypeOptions.length ? "" : reductionTypeOptions[0]);
+      setChosenReductionType(
+        !reductionTypeOptions.length ? "" : reductionTypeOptions[0]
+      );
     }
   }, [reductionTypeOptions]);
 
@@ -158,7 +215,10 @@ function useChosenReduceTo(problemName, reduceToOptions) {
 
     if (problemName === "SAT3" && reduceToOptions.includes(DEFAULT_SAT3_CHOSEN_REDUCE_TO)) {
       setChosenReduceTo(DEFAULT_SAT3_CHOSEN_REDUCE_TO);
-    } else if (problemName === "CLIQUE" && reduceToOptions.includes(DEFAULT_CLIQUE_CHOSEN_REDUCE_TO)) {
+    } else if (
+      problemName === "CLIQUE" &&
+      reduceToOptions.includes(DEFAULT_CLIQUE_CHOSEN_REDUCE_TO)
+    ) {
       setChosenReduceTo(DEFAULT_CLIQUE_CHOSEN_REDUCE_TO);
     } else {
       setChosenReduceTo(!reduceToOptions.length ? "" : reduceToOptions[0]);
@@ -173,9 +233,11 @@ function useReductionNameMap(url, problemName, chosenReduceTo) {
 
   useEffect(() => {
     if (chosenReduceTo) {
-      requestReductionNameMap(url, problemName, chosenReduceTo).then((reductionMap) => {
-        setReductionNameMap(reductionMap);
-      });
+      requestReductionNameMap(url, problemName, chosenReduceTo).then(
+        (reductionMap) => {
+          setReductionNameMap(reductionMap);
+        }
+      );
     } else {
       setReductionNameMap(new Map());
     }
@@ -184,7 +246,8 @@ function useReductionNameMap(url, problemName, chosenReduceTo) {
   // The following the functions are used to set the reduction names
   async function requestReductionNameMap(url, problemFrom, problemTo) {
     let map = new Map();
-    const reductions = (await requestReductions(url, problemFrom, problemTo)) ?? [];
+    const reductions =
+      (await requestReductions(url, problemFrom, problemTo)) ?? [];
     for (const r of reductions) {
       for (const reduction of r) {
         const info = await requestInfo(url, reduction);
