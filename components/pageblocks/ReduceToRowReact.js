@@ -95,7 +95,28 @@ export default function ReduceToRowReact({
               ? {
                   header: reduceToInfo.problemName ?? "",
                   formalDef: reduceToInfo.formalDefinition ?? "",
-                  info: (reduceToInfo.problemDefinition ?? "") + (reduceToInfo.source ?? ""),
+                  // description only 
+                  info: reduceToInfo.problemDefinition ?? "",
+                  // show source 
+                  source:
+                    reduceToInfo.source ||
+                    (Array.isArray(reduceToInfo.citations)
+                      ? reduceToInfo.citations.join("; ")
+                      : "") ||
+                    "",
+                  // contributors 
+                  credit:
+                    Array.isArray(reduceToInfo.contributors) &&
+                    reduceToInfo.contributors.length
+                      ? reduceToInfo.contributors.join(", ")
+                      : "",
+                  // hyperlink
+              //prefer docs url, then wiki name, else header, build wikipedia URL here
+                  wiki:
+                    reduceToInfo.docs_url ||
+                    reduceToInfo.wikiName ||
+                    reduceToInfo.problemName ||
+                    "",
                 }
               : TOOLTIP1
           }
