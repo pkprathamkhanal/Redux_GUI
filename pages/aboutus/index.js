@@ -34,7 +34,8 @@ export default function AboutUsPage() {
         "Russell Phillips",
         "Michael Crapse",
         "Ian Gonzalez",
-        "Sabal Subedi"
+        "Sabal Subedi",
+        "Himanshu jha",
         //Add new contributer
     ];
 
