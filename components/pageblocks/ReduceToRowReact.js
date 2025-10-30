@@ -150,7 +150,27 @@ export default function ReduceToRowReact({
               ? {
                   header: reducerInfo.reductionName ?? "",
                   formalDef: reducerInfo.reductionDefinition ?? "",
-                  info: reducerInfo.source ?? "",
+                  // plain description for the reduction
+                  info: reducerInfo.info ?? reducerInfo.description ?? "",
+                  // separate Source line
+                  source:
+                    reducerInfo.source ||
+                    (Array.isArray(reducerInfo.citations)
+                      ? reducerInfo.citations.join("; ")
+                      : "") ||
+                    "",
+                  // contributors if present
+                  credit:
+                    Array.isArray(reducerInfo.contributors) &&
+                    reducerInfo.contributors.length
+                      ? reducerInfo.contributors.join(", ")
+                      : "",
+                  // hyperlink target
+                  wiki:
+                    reducerInfo.docs_url ||
+                    reducerInfo.wikiName ||
+                    reducerInfo.reductionName ||
+                    "",
                 }
               : TOOLTIP2
           }
