@@ -77,14 +77,27 @@ export default function VerifyRowReact({
           ]}
         />{" "}
         <PopoverTooltipClick
-          toolTip={
-            chosenVerifier
-              ? {
-                  header: verifierInfo.verifierName ?? "",
-                  formalDef: verifierInfo.verifierDefinition ?? "",
-                  info: verifierInfo.source ?? "",
-                }
-              : TOOLTIP
+  toolTip={
+    chosenVerifier
+      ? {
+          header: verifierInfo.verifierName ?? "",
+          formalDef: verifierInfo.verifierDefinition ?? "",
+          // plain description only
+          info: verifierInfo.info ?? verifierInfo.description ?? "",
+          // show source 
+          source:
+            verifierInfo.source ||
+            (Array.isArray(verifierInfo.citations) ? verifierInfo.citations.join("; ") : "") ||
+            "",
+          // show contributors 
+          credit:
+            Array.isArray(verifierInfo.contributors) && verifierInfo.contributors.length
+              ? verifierInfo.contributors.join(", ")
+              : "",
+          // hyperlink target 
+          wiki: verifierInfo.docs_url || verifierInfo.wikiName || verifierInfo.verifierName || "",
+        }
+      : TOOLTIP
           }
         ></PopoverTooltipClick>
       </ProblemSection.Header>
