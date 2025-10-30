@@ -65,6 +65,26 @@ export default function SolveRowReact({
     link.click();
     document.body.removeChild(link);
   }
+const tip =
+    chosenSolver
+      ? {
+          header: solverInfo.solverName ?? "",
+          formalDef: solverInfo.solverDefinition ?? "",
+          // Keep description clean
+          info: solverInfo.info ?? solverInfo.description ?? "",
+          // Source on its own line 
+          source:
+            solverInfo.source ||
+            (Array.isArray(solverInfo.citations) ? solverInfo.citations.join("; ") : "") ||
+            "",
+          credit:
+            Array.isArray(solverInfo.contributors) && solverInfo.contributors.length
+              ? solverInfo.contributors.join(", ")
+              : "",
+          // Prefer docs link, then wiki name, else title
+          wiki: solverInfo.docs_url || solverInfo.wikiName || solverInfo.solverName || "",
+        }
+      : TOOLTIP;
 
   return (
     <ProblemSection>
@@ -85,17 +105,7 @@ export default function SolveRowReact({
             return !chosenReduceTo ? [extender(problemName)] : [extender(problemName), extender(chosenReduceTo)];
           }}
         />{" "}
-        <PopoverTooltipClick
-          toolTip={
-            chosenSolver
-              ? {
-                  header: solverInfo.solverName ?? "",
-                  formalDef: solverInfo.solverDefinition ?? "",
-                  info: solverInfo.source ?? "",
-                }
-              : TOOLTIP
-          }
-        ></PopoverTooltipClick>
+          <PopoverTooltipClick toolTip={tip} />
       </ProblemSection.Header>
 
       <ProblemSection.Body>
