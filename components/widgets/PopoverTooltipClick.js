@@ -15,6 +15,11 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { useEffect,useContext } from 'react';
 import { getThemeProps } from '@mui/system';
 
+// This helper builds a valid Wikipedia or external link.
+// If a full URL (http/https) is provided, it returns it as-is.
+// Otherwise, it converts the given title (wikiOrUrl or fallbackTitle)
+// into a Wikipedia link by replacing spaces with underscores.
+
 function normalizeHref(wikiOrUrl, fallbackTitle) {
   if (wikiOrUrl && /^https?:\/\//i.test(wikiOrUrl)) return wikiOrUrl;
   const title = wikiOrUrl || fallbackTitle;
